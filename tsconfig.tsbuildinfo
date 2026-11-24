@@ -1,1 +1,1 @@
-{"root":["./src/app.tsx","./src/calccenter.tsx","./src/main.tsx"],"version":"5.6.3"}
+{"root":["./src/app.tsx","./src/calccenter.tsx","./src/fastenerreference.tsx","./src/knowledgebase.tsx","./src/main.tsx","./src/components/converter.tsx","./src/components/dashboard.tsx","./src/components/formulalibrary.tsx","./src/components/materials.tsx","./src/components/scientific.tsx","./src/data/calculations.ts","./src/data/formulas.ts","./src/data/materials.ts","./src/data/tools.ts","./src/data/units.ts"],"version":"5.6.3"}

@@ -1,0 +1,188 @@
+export const units: Record<string, { label: string; items: [string, string, number][] }> = {
+  Length: {
+    label: 'Length',
+    items: [
+      ['Millimetre', 'mm', 0.001],
+      ['Centimetre', 'cm', 0.01],
+      ['Metre', 'm', 1],
+      ['Kilometre', 'km', 1000],
+      ['Inch', 'in', 0.0254],
+      ['Foot', 'ft', 0.3048],
+      ['Yard', 'yd', 0.9144],
+      ['Mile', 'mi', 1609.344],
+    ],
+  },
+  Area: {
+    label: 'Area',
+    items: [
+      ['Square millimetre', 'mm²', 1e-6],
+      ['Square centimetre', 'cm²', 1e-4],
+      ['Square metre', 'm²', 1],
+      ['Square kilometre', 'km²', 1e6],
+      ['Square inch', 'in²', 0.00064516],
+      ['Square foot', 'ft²', 0.09290304],
+      ['Acre', 'ac', 4046.8564224],
+      ['Hectare', 'ha', 10000],
+    ],
+  },
+  Volume: {
+    label: 'Volume',
+    items: [
+      ['Cubic millimetre', 'mm³', 1e-9],
+      ['Cubic centimetre', 'cm³', 1e-6],
+      ['Cubic metre', 'm³', 1],
+      ['Litre', 'L', 0.001],
+      ['Millilitre', 'mL', 1e-6],
+      ['US gallon', 'US gal', 0.0037854118],
+      ['Imperial gallon', 'Imp gal', 0.00454609],
+      ['Cubic inch', 'in³', 0.0000163871],
+      ['Cubic foot', 'ft³', 0.02831685],
+      ['Oil barrel', 'bbl', 0.1589873],
+    ],
+  },
+  'Mass & weight': {
+    label: 'Mass',
+    items: [
+      ['Milligram', 'mg', 1e-6],
+      ['Gram', 'g', 0.001],
+      ['Kilogram', 'kg', 1],
+      ['Metric tonne', 't', 1000],
+      ['Pound', 'lb', 0.45359237],
+      ['Ounce', 'oz', 0.028349523],
+      ['US ton', 'US ton', 907.18474],
+      ['Imperial ton', 'Imp ton', 1016.0469],
+    ],
+  },
+  Force: {
+    label: 'Force',
+    items: [
+      ['Newton', 'N', 1],
+      ['Kilonewton', 'kN', 1000],
+      ['Meganewton', 'MN', 1e6],
+      ['Kilogram-force', 'kgf', 9.80665],
+      ['Pound-force', 'lbf', 4.4482216],
+    ],
+  },
+  Pressure: {
+    label: 'Pressure',
+    items: [
+      ['Pascal', 'Pa', 1],
+      ['Kilopascal', 'kPa', 1000],
+      ['Megapascal', 'MPa', 1e6],
+      ['Bar', 'bar', 100000],
+      ['Millibar', 'mbar', 100],
+      ['Pounds per square inch', 'psi', 6894.757],
+      ['kgf/cm²', 'kgf/cm²', 98066.5],
+      ['Atmosphere', 'atm', 101325],
+      ['Millimetres of mercury', 'mmHg', 133.3224],
+      ['Metres water column', 'mH₂O', 9806.65],
+    ],
+  },
+  Power: {
+    label: 'Power',
+    items: [
+      ['Watt', 'W', 1],
+      ['Kilowatt', 'kW', 1000],
+      ['Megawatt', 'MW', 1e6],
+      ['Horsepower', 'hp', 745.7],
+      ['Metric horsepower', 'PS', 735.499],
+      ['BTU per hour', 'BTU/hr', 0.293071],
+    ],
+  },
+  Torque: {
+    label: 'Torque',
+    items: [
+      ['Newton metre', 'N·m', 1],
+      ['Kilonewton metre', 'kN·m', 1000],
+      ['Pound-foot', 'lb·ft', 1.355818],
+      ['Pound-inch', 'lb·in', 0.112985],
+      ['Kilogram-force metre', 'kgf·m', 9.80665],
+    ],
+  },
+  Speed: {
+    label: 'Speed',
+    items: [
+      ['Metres per second', 'm/s', 1],
+      ['Kilometres per hour', 'km/h', 0.277778],
+      ['Miles per hour', 'mph', 0.44704],
+      ['Feet per second', 'ft/s', 0.3048],
+    ],
+  },
+  Density: {
+    label: 'Density',
+    items: [
+      ['Kilogram per cubic metre', 'kg/m³', 1],
+      ['Gram per cubic centimetre', 'g/cm³', 1000],
+      ['Gram per litre', 'g/L', 1],
+      ['Pound per cubic foot', 'lb/ft³', 16.0185],
+      ['Pound per cubic inch', 'lb/in³', 27679.9],
+    ],
+  },
+  Energy: {
+    label: 'Energy',
+    items: [
+      ['Joule', 'J', 1],
+      ['Kilojoule', 'kJ', 1000],
+      ['Megajoule', 'MJ', 1e6],
+      ['Calorie', 'cal', 4.184],
+      ['Kilocalorie', 'kcal', 4184],
+      ['Kilowatt hour', 'kWh', 3600000],
+      ['BTU', 'BTU', 1055.06],
+    ],
+  },
+  Frequency: {
+    label: 'Frequency',
+    items: [
+      ['Hertz', 'Hz', 1],
+      ['Kilohertz', 'kHz', 1000],
+      ['Megahertz', 'MHz', 1e6],
+      ['Revolutions per minute', 'rpm', 1 / 60],
+    ],
+  },
+  Temperature: {
+    label: 'Temperature',
+    items: [
+      ['Celsius', '°C', 1],
+      ['Fahrenheit', '°F', 1],
+      ['Kelvin', 'K', 1],
+    ],
+  },
+  'Flow rate': {
+    label: 'Flow rate',
+    items: [
+      ['Cubic metres per second', 'm³/s', 1],
+      ['Cubic metres per hour', 'm³/h', 1 / 3600],
+      ['Litres per second', 'L/s', 0.001],
+      ['Litres per minute', 'L/min', 1 / 60000],
+      ['Litres per hour', 'L/h', 1 / 3600000],
+      ['US gallons per minute', 'US GPM', 0.0037854118 / 60],
+      ['Imperial gallons per minute', 'Imp GPM', 0.00454609 / 60],
+      ['Cubic feet per minute', 'ft³/min', 0.02831685 / 60],
+    ],
+  },
+  'Dynamic viscosity': {
+    label: 'Dynamic viscosity',
+    items: [
+      ['Pascal second', 'Pa·s', 1],
+      ['Millipascal second', 'mPa·s', 0.001],
+      ['Centipoise', 'cP', 0.001],
+      ['Poise', 'P', 0.1],
+    ],
+  },
+  'Kinematic viscosity': {
+    label: 'Kinematic viscosity',
+    items: [
+      ['Square metre per second', 'm²/s', 1],
+      ['Square millimetre per second', 'mm²/s', 1e-6],
+      ['Centistokes', 'cSt', 1e-6],
+    ],
+  },
+  Angle: {
+    label: 'Angle',
+    items: [
+      ['Degree', '°', Math.PI / 180],
+      ['Radian', 'rad', 1],
+      ['Revolution', 'rev', 2 * Math.PI],
+    ],
+  },
+};

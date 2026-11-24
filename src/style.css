@@ -47,3 +47,63 @@
 .calc-screen strong{font-size:clamp(23px,4vw,31px);}
 @media(max-width:760px){.calculator-layout{grid-template-columns:minmax(0,1fr);gap:12px}.sci-panel{width:100%;max-width:none;min-width:0;padding:13px}.calc-buttons{grid-template-columns:repeat(5,minmax(0,1fr));gap:6px}.calc-buttons button{height:44px;padding:0 2px;font-size:clamp(11px,3vw,14px)}.calc-buttons button.function{font-size:clamp(9px,2.55vw,11px)}.calc-screen{height:125px}.calc-screen div{max-height:54px;overflow:auto;font-size:clamp(15px,4vw,20px)}.calc-screen strong{font-size:clamp(25px,7vw,31px)}.calc-foot{display:flex;flex-wrap:wrap;gap:8px 12px;align-items:center}.calc-foot span,.calc-foot button{min-width:0;font-size:10px}}
 @media(max-width:380px){.sci-panel{padding:10px}.calc-buttons{gap:5px}.calc-buttons button{height:41px;font-size:11px}.calc-buttons button.function{font-size:9px}.calc-head{gap:6px}.calc-type{margin-left:5px}.calc-foot{gap:6px 9px}}
+
+/* Dashboard logo header and art mark */
+.dashboard-brand-header {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  background: var(--surface2);
+  border: 1px solid var(--line);
+  padding: 6px 14px 6px 8px;
+  border-radius: 9px;
+  margin-bottom: 12px;
+}
+.dashboard-mark {
+  width: 28px;
+  height: 28px;
+  border-radius: 8px;
+  background: #19273c;
+  border: 1px solid #33445c;
+  transform: none;
+}
+.dark .dashboard-mark {
+  background: #0f1b2c;
+  border-color: #273a54;
+}
+.dashboard-brand-title {
+  display: flex;
+  flex-direction: column;
+}
+.dashboard-brand-title b {
+  font-family: Manrope, sans-serif;
+  font-size: 13px;
+  letter-spacing: 0.5px;
+  color: var(--ink);
+  line-height: 1.1;
+}
+.dashboard-brand-title b span {
+  color: #3468e8;
+  margin-left: 2px;
+}
+.dark .dashboard-brand-title b span {
+  color: #75b7ff;
+}
+.dashboard-brand-title small {
+  font-size: 7.5px;
+  letter-spacing: 1.4px;
+  color: var(--muted);
+  font-weight: 700;
+}
+.art-brand-mark {
+  width: 36px;
+  height: 36px;
+  border-radius: 10px;
+  background: #101e32;
+  border: 1px solid #334863;
+  transform: none;
+}
+.dark .art-brand-mark {
+  background: #070e1a;
+  border-color: #243750;
+}

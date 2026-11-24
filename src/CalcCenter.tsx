@@ -1,18 +1,199 @@
-import {useState} from 'react';
-import {Activity,Calculator,Copy,Info,Search} from 'lucide-react';
+import { useEffect, useState } from 'react';
+import { Activity, Calculator, Copy, Info, Search } from 'lucide-react';
+import { calculations, getCalcIndexFromPage } from './data/calculations';
 
-type Field={name:string;unit:string;initial:number};
-type Calc={name:string;group:string;description:string;formula:string;assumptions:string;fields:Field[];unit:string;run:(v:number[])=>number};
-const calculations:Calc[]=[
- {name:'Pump hydraulic power',group:'PUMPS',description:'Estimate power transferred to liquid from flow, head and density.',formula:'P = ρgQH',assumptions:'Enter flow in m³/h. This is hydraulic power; it does not include pump or motor losses.',fields:[{name:'Flow rate',unit:'m³/h',initial:100},{name:'Total head',unit:'m',initial:50},{name:'Fluid density',unit:'kg/m³',initial:1000}],unit:'W',run:v=>v[0]/3600*v[1]*v[2]*9.80665},
- {name:'Pressure from force',group:'FUNDAMENTALS',description:'Calculate uniform pressure from applied force and loaded area.',formula:'P = F / A',assumptions:'Use the effective loaded area in m².',fields:[{name:'Applied force',unit:'N',initial:10000},{name:'Area',unit:'m²',initial:.02}],unit:'Pa',run:v=>v[0]/v[1]},
- {name:'Pipe flow rate',group:'FLUID MECHANICS',description:'Calculate flow in a full circular pipe from its internal diameter and mean velocity.',formula:'Q = A × v = (πD² / 4) × v',assumptions:'Diameter is internal diameter. Flow is assumed full-pipe with a representative mean velocity.',fields:[{name:'Internal diameter',unit:'mm',initial:100},{name:'Mean velocity',unit:'m/s',initial:2}],unit:'m³/s',run:v=>Math.PI*(v[0]/1000)**2/4*v[1]},
- {name:'Darcy–Weisbach pressure drop',group:'FLUID MECHANICS',description:'Estimate straight-pipe friction pressure drop.',formula:'Δp = f (L / D) (ρv² / 2)',assumptions:'f is the Darcy friction factor. Fittings, elevation and equipment losses are excluded.',fields:[{name:'Darcy friction factor',unit:'—',initial:.02},{name:'Pipe length',unit:'m',initial:100},{name:'Internal diameter',unit:'m',initial:.1},{name:'Fluid density',unit:'kg/m³',initial:1000},{name:'Mean velocity',unit:'m/s',initial:2}],unit:'Pa',run:v=>v[0]*(v[1]/v[2])*(v[3]*v[4]**2/2)},
- {name:'Reynolds number',group:'FLUID MECHANICS',description:'Calculate a dimensionless internal-flow Reynolds number.',formula:'Re = ρvD / μ',assumptions:'Use consistent SI units: density kg/m³, velocity m/s, diameter m and viscosity Pa·s.',fields:[{name:'Density',unit:'kg/m³',initial:1000},{name:'Velocity',unit:'m/s',initial:1},{name:'Pipe diameter',unit:'m',initial:.05},{name:'Dynamic viscosity',unit:'Pa·s',initial:.001}],unit:'—',run:v=>v[0]*v[1]*v[2]/v[3]},
- {name:'Shaft power from torque',group:'ROTATING EQUIPMENT',description:'Calculate shaft power from torque and rotational speed.',formula:'P = T × 2πN / 60',assumptions:'Torque in N·m; speed in rpm.',fields:[{name:'Torque',unit:'N·m',initial:100},{name:'Rotational speed',unit:'rpm',initial:1500}],unit:'W',run:v=>v[0]*2*Math.PI*v[1]/60},
- {name:'Thermal expansion',group:'THERMAL',description:'Estimate free linear expansion due to a temperature change.',formula:'ΔL = αL₀ΔT',assumptions:'Free expansion only. Restraint stresses are not included.',fields:[{name:'Expansion coefficient',unit:'1/K',initial:12e-6},{name:'Original length',unit:'m',initial:10},{name:'Temperature change',unit:'K',initial:80}],unit:'m',run:v=>v[0]*v[1]*v[2]},
- {name:'Heat exchanger duty',group:'HEAT TRANSFER',description:'Estimate sensible heat duty at constant specific heat.',formula:'Q̇ = ṁcₚΔT',assumptions:'Use consistent mass-flow and specific-heat units; latent heat is not included.',fields:[{name:'Mass flow',unit:'kg/s',initial:2},{name:'Specific heat',unit:'J/(kg·K)',initial:4180},{name:'Temperature change',unit:'K',initial:25}],unit:'W',run:v=>v[0]*v[1]*v[2]},
- {name:'Log mean temperature difference',group:'HEAT TRANSFER',description:'Calculate LMTD from positive terminal temperature differences.',formula:'LMTD = (ΔT₁ − ΔT₂) / ln(ΔT₁ / ΔT₂)',assumptions:'Multipass correction is separate. Do not use if terminal temperature differences cross.',fields:[{name:'Terminal difference ΔT₁',unit:'K',initial:50},{name:'Terminal difference ΔT₂',unit:'K',initial:20}],unit:'K',run:v=>v[0]===v[1]?v[0]:(v[0]-v[1])/Math.log(v[0]/v[1])},
- {name:'Bearing L₁₀ life',group:'ROTATING EQUIPMENT',description:'Basic rating life estimate for a rolling-element bearing.',formula:'L₁₀ = (C / P)ᵖ × 10⁶ revolutions',assumptions:'Use p = 3 for ball bearings or 10/3 for roller bearings. Adjustments and lubrication effects are excluded.',fields:[{name:'Dynamic rating C',unit:'kN',initial:30},{name:'Equivalent load P',unit:'kN',initial:5},{name:'Life exponent p',unit:'—',initial:3}],unit:'million rev',run:v=>(v[0]/v[1])**v[2]},
-];
-export default function CalcCenter({page,toast}:any){const initial=page.toLowerCase().includes('pump')?0:page.toLowerCase().includes('flow')?2:page.toLowerCase().includes('pressure')?1:page.toLowerCase().includes('power')?5:0;const [selected,setSelected]=useState(initial);const [filter,setFilter]=useState('');const [values,setValues]=useState<Record<string,string>>({});const [result,setResult]=useState<number|null>(null);const [error,setError]=useState('');const calc=calculations[selected];const input=(i:number)=>values[`${selected}-${i}`]??String(calc.fields[i].initial);const choose=(i:number)=>{setSelected(i);setResult(null);setError('')};const visible=calculations.map((c,i)=>({c,i})).filter(({c})=>(c.name+' '+c.group).toLowerCase().includes(filter.toLowerCase()));const calculate=()=>{const v=calc.fields.map((_,i)=>Number(input(i)));if(v.some(n=>!Number.isFinite(n))){setError('Enter a valid number for each input.');setResult(null);return}const zeroDenom=(selected===1&&v[1]===0)||(selected===3&&v[2]===0)||(selected===4&&v[3]===0)||(selected===8&&(v[0]<=0||v[1]<=0))||(selected===9&&v[1]===0);if(zeroDenom){setError('Check the inputs: a required area, diameter, viscosity, pressure difference or load cannot be zero.');setResult(null);return}const n=calc.run(v);if(!Number.isFinite(n)){setError('This input combination does not produce a finite engineering result.');setResult(null);return}setError('');setResult(n)};return <div className="content page-content calc-page"><div className="page-heading"><div className="eyebrow">MECHANICAL ENGINEERING · CALCULATION DESK</div><h1>Mechanical Calculators</h1><p>A focused set of practical calculations with clear inputs, equations, results and assumptions.</p></div><div className="calc-center-layout"><aside className="panel calc-tool-list"><label className="table-search"><Search size={15}/><input value={filter} onChange={e=>setFilter(e.target.value)} placeholder="Find a calculator…" aria-label="Filter calculators"/></label><div className="calc-items">{visible.map(({c,i})=><button key={c.name} className={selected===i?'calc-tool-active':''} onClick={()=>choose(i)}><span>{String(i+1).padStart(2,'0')}</span><b>{c.name}</b></button>)}</div><div className="calc-count"><Activity size={14}/> 10 essential calculators</div></aside><section className="panel calculation-panel calc-center-panel"><div className="panel-top"><div><span className="calc-category">{calc.group}</span><h2>{calc.name}</h2><p>{calc.description}</p></div><span className="tool-icon blue"><Calculator size={18}/></span></div><div className="calc-input-grid">{calc.fields.map((f,i)=><label key={f.name}>{f.name}<div className="input-unit"><input type="number" step="any" value={input(i)} onChange={e=>{setValues({...values,[`${selected}-${i}`]:e.target.value});setResult(null);setError('')}}/><span>{f.unit}</span></div></label>)}</div><button className="primary-btn" onClick={calculate}><Calculator size={16}/> Calculate result</button><div className="calc-explainer"><span>FORMULA</span><b>{calc.formula}</b><p>{calc.assumptions}</p></div>{error&&<div className="calc-inline-error" role="alert">{error}</div>}{result!==null&&<div className="calc-result-strip"><div><span>CALCULATED RESULT</span><strong>{result.toLocaleString('en-US',{maximumSignificantDigits:7})}</strong><small>{calc.unit}</small></div><button className="secondary-btn" onClick={()=>{navigator.clipboard?.writeText(`${result} ${calc.unit}`);toast('Result copied')}}><Copy size={14}/> Copy result</button></div>}<div className="calc-assumption"><Info size={15}/><span>Preliminary estimate. Confirm units, boundary conditions, equipment documentation and applicable project requirements before design or operation.</span></div></section></div><div className="calc-picks"><div className="section-head"><div><div className="section-title"><h2>Essential mechanical calculations</h2></div><p>Select a calculation to start.</p></div></div><div className="calc-pick-grid">{calculations.map((c,i)=><button className="calc-pick" key={c.name} onClick={()=>choose(i)}><small>{c.group}</small><b>{c.name}</b></button>)}</div></div></div>}
+export default function CalcCenter({ page, toast }: any) {
+  const [selected, setSelected] = useState(() => getCalcIndexFromPage(page));
+  const [filter, setFilter] = useState('');
+  const [values, setValues] = useState<Record<string, string>>({});
+  const [result, setResult] = useState<number | null>(null);
+  const [error, setError] = useState('');
+
+  // Sync state whenever the page route changes
+  useEffect(() => {
+    setSelected(getCalcIndexFromPage(page));
+    setResult(null);
+    setError('');
+  }, [page]);
+
+  const calc = calculations[selected] || calculations[0];
+
+  const input = (i: number) =>
+    values[`${selected}-${i}`] ?? String(calc.fields[i].initial);
+
+  const choose = (i: number) => {
+    setSelected(i);
+    setResult(null);
+    setError('');
+  };
+
+  const visible = calculations
+    .map((c, i) => ({ c, i }))
+    .filter(({ c }) => (c.name + ' ' + c.group).toLowerCase().includes(filter.toLowerCase()));
+
+  const calculate = () => {
+    const rawInputs = calc.fields.map((_, i) => (input(i) ?? '').trim());
+
+    if (rawInputs.some((s) => s === '' || isNaN(Number(s)))) {
+      setError('Please enter a valid numeric value for each input field.');
+      setResult(null);
+      return;
+    }
+
+    const v = rawInputs.map(Number);
+
+    // Run per-calculator validation rules
+    if (calc.validate) {
+      const valError = calc.validate(v);
+      if (valError) {
+        setError(valError);
+        setResult(null);
+        return;
+      }
+    }
+
+    const n = calc.run(v);
+    if (!Number.isFinite(n)) {
+      setError('This input combination does not produce a finite engineering result.');
+      setResult(null);
+      return;
+    }
+
+    setError('');
+    setResult(n);
+  };
+
+  return (
+    <div className="content page-content calc-page">
+      <div className="page-heading">
+        <div className="eyebrow">MECHANICAL ENGINEERING · CALCULATION DESK</div>
+        <h1>Mechanical Calculators</h1>
+        <p>A focused set of practical calculations with clear inputs, equations, results and assumptions.</p>
+      </div>
+
+      <div className="calc-center-layout">
+        <aside className="panel calc-tool-list">
+          <label className="table-search">
+            <Search size={15} />
+            <input
+              value={filter}
+              onChange={(e) => setFilter(e.target.value)}
+              placeholder="Find a calculator…"
+              aria-label="Filter calculators"
+            />
+          </label>
+          <div className="calc-items">
+            {visible.map(({ c, i }) => (
+              <button
+                key={c.name}
+                className={selected === i ? 'calc-tool-active' : ''}
+                onClick={() => choose(i)}
+              >
+                <span>{String(i + 1).padStart(2, '0')}</span>
+                <b>{c.name}</b>
+              </button>
+            ))}
+          </div>
+          <div className="calc-count">
+            <Activity size={14} /> 10 essential calculators
+          </div>
+        </aside>
+
+        <section className="panel calculation-panel calc-center-panel">
+          <div className="panel-top">
+            <div>
+              <span className="calc-category">{calc.group}</span>
+              <h2>{calc.name}</h2>
+              <p>{calc.description}</p>
+            </div>
+            <span className="tool-icon blue">
+              <Calculator size={18} />
+            </span>
+          </div>
+
+          <div className="calc-input-grid">
+            {calc.fields.map((f, i) => (
+              <label key={f.name}>
+                {f.name}
+                <div className="input-unit">
+                  <input
+                    type="number"
+                    step="any"
+                    value={input(i)}
+                    onChange={(e) => {
+                      setValues({ ...values, [`${selected}-${i}`]: e.target.value });
+                      setResult(null);
+                      setError('');
+                    }}
+                  />
+                  <span>{f.unit}</span>
+                </div>
+              </label>
+            ))}
+          </div>
+
+          <button className="primary-btn" onClick={calculate}>
+            <Calculator size={16} /> Calculate result
+          </button>
+
+          <div className="calc-explainer">
+            <span>FORMULA</span>
+            <b>{calc.formula}</b>
+            <p>{calc.assumptions}</p>
+          </div>
+
+          {error && (
+            <div className="calc-inline-error" role="alert">
+              {error}
+            </div>
+          )}
+
+          {result !== null && (
+            <div className="calc-result-strip">
+              <div>
+                <span>CALCULATED RESULT</span>
+                <strong>{result.toLocaleString('en-US', { maximumSignificantDigits: 7 })}</strong>
+                <small>{calc.unit}</small>
+              </div>
+              <button
+                className="secondary-btn"
+                onClick={() => {
+                  navigator.clipboard?.writeText(`${result} ${calc.unit}`);
+                  toast('Result copied');
+                }}
+              >
+                <Copy size={14} /> Copy result
+              </button>
+            </div>
+          )}
+
+          <div className="calc-assumption">
+            <Info size={15} />
+            <span>
+              Preliminary estimate. Confirm units, boundary conditions, equipment documentation and applicable project requirements before design or operation.
+            </span>
+          </div>
+        </section>
+      </div>
+
+      <div className="calc-picks">
+        <div className="section-head">
+          <div>
+            <div className="section-title">
+              <h2>Essential mechanical calculations</h2>
+            </div>
+            <p>Select a calculation to start.</p>
+          </div>
+        </div>
+        <div className="calc-pick-grid">
+          {calculations.map((c, i) => (
+            <button className="calc-pick" key={c.name} onClick={() => choose(i)}>
+              <small>{c.group}</small>
+              <b>{c.name}</b>
+            </button>
+          ))}
+        </div>
+      </div>
+    </div>
+  );
+}
