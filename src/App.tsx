@@ -201,20 +201,44 @@ export default function App() {
       {/* Main Content Area */}
       <main className="main">
         <header className="topbar">
-          <button
-            className="mobile-menu"
-            aria-label={mobileNav ? 'Close navigation' : 'Open navigation'}
-            aria-expanded={mobileNav}
-            aria-controls="primary-sidebar"
-            onClick={() => setMobileNav(!mobileNav)}
-          >
-            {mobileNav ? <X size={20} /> : <Menu size={20} />}
-          </button>
+          <div className="topbar-left">
+            <button
+              className="mobile-menu"
+              aria-label={mobileNav ? 'Close navigation' : 'Open navigation'}
+              aria-expanded={mobileNav}
+              aria-controls="primary-sidebar"
+              onClick={() => setMobileNav(!mobileNav)}
+            >
+              {mobileNav ? <X size={20} /> : <Menu size={20} />}
+            </button>
 
-          <div className="crumb">
-            <span>Workspace</span>
-            <ChevronRight size={14} />
-            <b>{page}</b>
+            <div
+              className="topbar-brand"
+              onClick={() => open('Dashboard')}
+              role="button"
+              tabIndex={0}
+              title="MechToolbox - Dashboard"
+            >
+              <div className="brand-mark topbar-mark">
+                <span />
+                <span />
+                <span />
+              </div>
+              <div className="topbar-brand-text">
+                <b>
+                  MECH<span>TOOLBOX</span>
+                </b>
+                <small>ENGINEERING SUITE</small>
+              </div>
+            </div>
+
+            <div className="topbar-divider" />
+
+            <div className="crumb">
+              <span>Workspace</span>
+              <ChevronRight size={14} />
+              <b>{page}</b>
+            </div>
           </div>
 
           <div className="top-actions">

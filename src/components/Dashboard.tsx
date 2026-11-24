@@ -11,6 +11,7 @@ import {
   Info,
   MoreHorizontal,
   ShieldCheck,
+  Wrench,
 } from 'lucide-react';
 
 export default function Dashboard({
@@ -27,15 +28,6 @@ export default function Dashboard({
     <div className="content dashboard">
       <div className="welcome-row">
         <div>
-          <div className="dashboard-brand-header">
-            <div className="brand-mark dashboard-mark" title="MechToolbox Brand Mark">
-              <span /><span /><span />
-            </div>
-            <div className="dashboard-brand-title">
-              <b>MECH<span>TOOLBOX</span></b>
-              <small>ENGINEERING SUITE</small>
-            </div>
-          </div>
           <div className="eyebrow">
             <span className="eyebrow-dot" /> YOUR ENGINEERING WORKSPACE
           </div>
@@ -53,10 +45,8 @@ export default function Dashboard({
         <div className="welcome-art">
           <div className="orbit o1" />
           <div className="orbit o2" />
-          <div className="art-center" title="MechToolbox">
-            <div className="brand-mark art-brand-mark">
-              <span /><span /><span />
-            </div>
+          <div className="art-center">
+            <Wrench size={34} />
           </div>
           <span className="art-chip chip-a">
             <Activity size={15} /> 24.6 <small>kW</small>
