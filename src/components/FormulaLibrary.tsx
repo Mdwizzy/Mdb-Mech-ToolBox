@@ -1,10 +1,16 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { Bookmark, Copy, Search } from 'lucide-react';
 import { formulas } from '../data/formulas';
 
-export default function FormulaLibrary({ toast, favs, toggleFav }: any) {
-  const [q, setQ] = useState('');
+export default function FormulaLibrary({ toast, favs, toggleFav, initialQuery }: any) {
+  const [q, setQ] = useState(initialQuery || '');
   const [cat, setCat] = useState('All formulas');
+
+  useEffect(() => {
+    if (initialQuery !== undefined) {
+      setQ(initialQuery);
+    }
+  }, [initialQuery]);
 
   const cats = [
     'All formulas',

@@ -97,7 +97,7 @@ export default function Dashboard({
             <b>SI</b>
             <span>Unit system</span>
           </div>
-          <button>Change</button>
+          <button onClick={() => open('Unit Converter')}>Change</button>
         </div>
       </div>
 
@@ -150,11 +150,17 @@ export default function Dashboard({
                     key === 'Conversions'
                       ? 'Unit Converter'
                       : key === 'References'
-                      ? 'Materials'
+                      ? 'Material Properties'
                       : key === 'Workshop'
                       ? 'Fasteners & Spanner'
                       : key === 'Calculators'
                       ? 'Scientific Calculator'
+                      : key === 'Knowledge'
+                      ? 'Knowledge Base'
+                      : key === 'Maintenance'
+                      ? 'Maintenance thinking & RCA'
+                      : key === 'Mechanical'
+                      ? 'Calculators'
                       : name
                   )
                 }

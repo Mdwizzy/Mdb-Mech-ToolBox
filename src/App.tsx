@@ -29,6 +29,7 @@ import {
   MoreHorizontal,
   Search,
   Sun,
+  Wrench,
   X,
 } from 'lucide-react';
 
@@ -108,15 +109,19 @@ export default function App() {
         className={`sidebar ${collapsed ? 'collapsed' : ''} ${mobileNav ? 'mobile-open' : ''}`}
       >
         <div className="brand">
-          <div className="brand-mark">
-            <MdbLogo markOnly className="brand-mark-svg" />
-          </div>
-          {!collapsed && (
-            <div>
-              <b>
-                MDB <span>MECH</span>
-              </b>
-              <small>TOOLBOX</small>
+          {collapsed ? (
+            <div className="brand-mark" title="MDB Mech Toolbox">
+              <MdbLogo markOnly className="brand-mark-svg" />
+            </div>
+          ) : (
+            <div
+              className="sidebar-brand-link"
+              onClick={() => open('Dashboard')}
+              role="button"
+              tabIndex={0}
+              title="MDB Mech Toolbox - Dashboard"
+            >
+              <MdbLogo className="sidebar-logo-svg" />
             </div>
           )}
           <button
@@ -151,7 +156,8 @@ export default function App() {
           {[
             ['Dashboard', Home],
             ['Unit Converter', ArrowLeftRight],
-            ['Calculators', Calculator],
+            ['Calculators', Wrench],
+            ['Scientific Calculator', Calculator],
             ['Fasteners & Spanner', Hammer],
             ['Formula Library', BookOpen],
             ['Materials', Layers3],
@@ -175,7 +181,7 @@ export default function App() {
         <div className="sidebar-bottom">
           <button className="nav-item" onClick={() => setDark(!dark)}>
             {dark ? <Sun size={18} /> : <Moon size={18} />}
-            {!collapsed && <span>{dark ? 'Light mode' : 'Appearance'}</span>}
+            {!collapsed && <span>{dark ? 'Light mode' : 'Dark mode'}</span>}
           </button>
           <div className="profile">
             <div className="avatar">ME</div>
@@ -281,18 +287,25 @@ export default function App() {
             open={open}
             toggleFav={toggleFav}
           />
-        ) : page === 'Unit Converter' || page === 'Volume Converter' ? (
+        ) : page === 'Unit Converter' || page === 'Volume Converter' || page === 'Unit Conversions' ? (
           <Converter toast={setNotice} preset={page === 'Volume Converter' ? 'Volume' : undefined} />
         ) : page === 'Scientific Calculator' ? (
           <Scientific toast={setNotice} />
-        ) : page === 'Fasteners & Spanner' || page === 'Bolt & Spanner Reference' ? (
+        ) : page === 'Fasteners & Spanner' || page === 'Bolt & Spanner Reference' || page === 'Fasteners & Workshop' ? (
           <FastenerReference />
-        ) : page === 'Formula Library' ? (
-          <FormulaLibrary toast={setNotice} favs={favs} toggleFav={toggleFav} />
-        ) : page === 'Materials' ? (
+        ) : page === 'Formula Library' || page === 'Engineering Formula Library' || page.toLowerCase().endsWith('formula') ? (
+          <FormulaLibrary
+            toast={setNotice}
+            favs={favs}
+            toggleFav={toggleFav}
+            initialQuery={page.toLowerCase().endsWith('formula') ? page.replace(/\s*formula$/i, '') : undefined}
+          />
+        ) : page === 'Materials' || page === 'Material Properties' || page === 'Materials & Properties' ? (
           <Materials />
-        ) : page === 'Knowledge Base' ? (
+        ) : page === 'Knowledge Base' || page === 'Mechanical Knowledge Base' ? (
           <KnowledgeBase />
+        ) : page === 'Maintenance Engineering' ? (
+          <KnowledgeBase initialTopic="Maintenance thinking & RCA" />
         ) : knowledgeTopicNames.includes(page) ? (
           <KnowledgeBase initialTopic={page} />
         ) : (

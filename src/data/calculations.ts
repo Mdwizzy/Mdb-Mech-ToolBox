@@ -196,13 +196,13 @@ export const calculations: Calculation[] = [
 
 export function getCalcIndexFromPage(page: string): number {
   const s = (page || '').toLowerCase();
-  if (s.includes('pump')) return 0;
+  if (s.includes('pump') || s.includes('compressor')) return 0;
   if (s.includes('pressure')) return 1;
-  if (s.includes('flow') || s.includes('pipe')) return 2;
+  if (s.includes('flow') || s.includes('pipe') || s.includes('fluid')) return 2;
   if (s.includes('darcy') || s.includes('friction') || s.includes('drop')) return 3;
   if (s.includes('reynolds')) return 4;
-  if (s.includes('power') || s.includes('shaft') || s.includes('torque')) return 5;
-  if (s.includes('expansion') || s.includes('thermal')) return 6;
+  if (s.includes('power') || s.includes('shaft') || s.includes('torque') || s.includes('mechanical')) return 5;
+  if (s.includes('expansion') || s.includes('thermal') || s.includes('thermo')) return 6;
   if (s.includes('duty') || s.includes('exchanger')) return 7;
   if (s.includes('lmtd')) return 8;
   if (s.includes('bearing') || s.includes('life')) return 9;

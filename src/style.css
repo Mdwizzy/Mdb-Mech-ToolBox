@@ -81,6 +81,22 @@
 .dark .mdb-logo-title, .app.dark .mdb-logo-title {
   fill: #8F45F8;
 }
+.sidebar .mdb-logo-title {
+  fill: #9E55FF;
+}
+.sidebar-brand-link {
+  display: flex;
+  align-items: center;
+  cursor: pointer;
+  padding: 0;
+  flex: 1;
+}
+.sidebar-logo-svg {
+  height: 34px;
+  width: auto;
+  max-width: 150px;
+  display: block;
+}
 .brand-mark-svg {
   width: 22px;
   height: 22px;
