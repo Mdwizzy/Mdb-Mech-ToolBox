@@ -7,6 +7,7 @@ import Converter from './components/Converter';
 import Scientific from './components/Scientific';
 import FormulaLibrary from './components/FormulaLibrary';
 import Materials from './components/Materials';
+import MdbLogo from './components/MdbLogo';
 import { tools, categories, knowledgeTopicNames } from './data/tools';
 import { formulas } from './data/formulas';
 import {
@@ -108,16 +109,14 @@ export default function App() {
       >
         <div className="brand">
           <div className="brand-mark">
-            <span />
-            <span />
-            <span />
+            <MdbLogo markOnly className="brand-mark-svg" />
           </div>
           {!collapsed && (
             <div>
               <b>
-                MECH<span>TOOLBOX</span>
+                MDB <span>MECH</span>
               </b>
-              <small>ENGINEERING SUITE</small>
+              <small>TOOLBOX</small>
             </div>
           )}
           <button
@@ -217,19 +216,9 @@ export default function App() {
               onClick={() => open('Dashboard')}
               role="button"
               tabIndex={0}
-              title="MechToolbox - Dashboard"
+              title="MDB Mech Toolbox - Dashboard"
             >
-              <div className="brand-mark topbar-mark">
-                <span />
-                <span />
-                <span />
-              </div>
-              <div className="topbar-brand-text">
-                <b>
-                  MECH<span>TOOLBOX</span>
-                </b>
-                <small>ENGINEERING SUITE</small>
-              </div>
+              <MdbLogo className="topbar-logo-svg" />
             </div>
 
             <div className="topbar-divider" />
