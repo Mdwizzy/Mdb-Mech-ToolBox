@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react';
 import { Bookmark, Copy, Search } from 'lucide-react';
 import { formulas } from '../data/formulas';
+import PublishedAdminContent from './PublishedAdminContent';
 
 export default function FormulaLibrary({ toast, favs, toggleFav, initialQuery }: any) {
   const [q, setQ] = useState(initialQuery || '');
@@ -92,6 +93,7 @@ export default function FormulaLibrary({ toast, favs, toggleFav, initialQuery }:
             </article>
           ))}
         </div>
+        <PublishedAdminContent table="engineering_content" contentTypes={['formula']} />
       </div>
     </div>
   );

@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { Info, Search } from 'lucide-react';
 import { materialHeaders, materials } from '../data/materials';
+import PublishedAdminContent from './PublishedAdminContent';
 
 export default function Materials() {
   const [q, setQ] = useState('');
@@ -63,6 +64,7 @@ export default function Materials() {
           <Info size={14} /> Values are approximate typical references, not guaranteed design values. Confirm the material grade, condition and certified data for design work.
         </div>
       </section>
+      <PublishedAdminContent table="material_properties" />
     </div>
   );
 }

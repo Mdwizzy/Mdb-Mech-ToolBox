@@ -7,6 +7,9 @@ import Converter from './components/Converter';
 import Scientific from './components/Scientific';
 import FormulaLibrary from './components/FormulaLibrary';
 import Materials from './components/Materials';
+import AdminDashboard from './admin/AdminDashboard';
+import FeedbackForm from './components/FeedbackForm';
+import { recordUsage } from './lib/supabase';
 import MdbLogo from './components/MdbLogo';
 import { tools, categories, knowledgeTopicNames } from './data/tools';
 import { formulas } from './data/formulas';
@@ -28,12 +31,13 @@ import {
   Moon,
   MoreHorizontal,
   Search,
+  ShieldCheck,
   Sun,
   Wrench,
   X,
 } from 'lucide-react';
 
-export default function App() {
+function PublicApp() {
   const [page, setPage] = useState('Dashboard');
   const [query, setQuery] = useState('');
   const [dark, setDark] = useState(false);
@@ -69,11 +73,17 @@ export default function App() {
   }, [mobileNav]);
 
   const open = (name: string) => {
+    if (name === 'Admin Console') {
+      window.location.assign('/admin');
+      return;
+    }
     setPage(name);
     setMobileNav(false);
     const list = [name, ...recent.filter((x) => x !== name)].slice(0, 4);
     setRecent(list);
     localStorage.setItem('toolbox-recent', JSON.stringify(list));
+    const kind = name.toLowerCase().includes('calculator') || name === 'Calculators' ? 'calculator' : name.includes('Converter') || name.includes('Conversions') ? 'conversion' : knowledgeTopicNames.includes(name) || name.includes('Knowledge') ? 'knowledge' : null;
+    if (kind) void recordUsage(kind, name);
   };
 
   const toggleFav = (name: string) => {
@@ -162,6 +172,8 @@ export default function App() {
             ['Formula Library', BookOpen],
             ['Materials', Layers3],
             ['Knowledge Base', BookOpen],
+            ['Report an Issue', CircleHelp],
+            ['Admin Console', ShieldCheck],
           ].map(([n, Icon]: any) => (
             <button
               key={n}
@@ -243,7 +255,7 @@ export default function App() {
                 placeholder="Search tools, formulas, references..."
                 value={query}
                 onChange={(e) => setQuery(e.target.value)}
-                onKeyDown={(e) => e.key === 'Enter' && matches[0] && open(matches[0].name)}
+                onKeyDown={(e) => { if (e.key === 'Enter') { void recordUsage('search', query, Boolean(matches.length)); if (matches[0]) open(matches[0].name); } }}
               />
               <kbd>⌘ K</kbd>
               {query && (
@@ -276,7 +288,9 @@ export default function App() {
         </header>
 
         {/* Page Switcher */}
-        {page === 'Dashboard' ? (
+        {page === 'Report an Issue' ? (
+          <FeedbackForm />
+        ) : page === 'Dashboard' ? (
           <Dashboard
             tools={tools}
             categories={categories as any}
@@ -330,4 +344,9 @@ export default function App() {
       )}
     </div>
   );
+}
+
+export default function App() {
+  const path = window.location.pathname.replace(/\/+$/, '') || '/';
+  return path === '/admin' ? <AdminDashboard /> : <PublicApp />;
 }

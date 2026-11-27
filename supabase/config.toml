@@ -1,0 +1,8 @@
+[functions.admin-api]
+verify_jwt = true
+
+[functions.verify-calculator]
+verify_jwt = true
+
+[functions.record-usage]
+verify_jwt = true

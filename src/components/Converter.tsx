@@ -1,6 +1,7 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { ArrowDownUp, ChevronDown, Copy, Info, X } from 'lucide-react';
 import { units } from '../data/units';
+import { recordUsage } from '../lib/supabase';
 
 export default function Converter({ toast, preset }: any) {
   const [cat, setCat] = useState(preset || 'Length');
@@ -33,6 +34,12 @@ export default function Converter({ toast, preset }: any) {
   const disp = Number.isFinite(result)
     ? new Intl.NumberFormat('en-US', { maximumSignificantDigits: 9 }).format(result)
     : '—';
+
+  useEffect(() => {
+    if (!value || !Number.isFinite(result)) return;
+    const timer = window.setTimeout(() => void recordUsage('conversion', cat), 1200);
+    return () => window.clearTimeout(timer);
+  }, [cat, value, from, to, result]);
 
   const swap = () => {
     setFrom(to);

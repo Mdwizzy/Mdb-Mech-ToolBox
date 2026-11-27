@@ -1,6 +1,9 @@
 import { useEffect, useState } from 'react';
 import { Activity, Calculator, Copy, Info, Search } from 'lucide-react';
 import { calculations, getCalcIndexFromPage } from './data/calculations';
+import { recordUsage, supabase } from './lib/supabase';
+
+const logicIds = ['pump_hydraulic_power','pressure_from_force','pipe_flow_rate','darcy_weisbach','reynolds_number','shaft_power','thermal_expansion','heat_duty','lmtd','bearing_life'];
 
 export default function CalcCenter({ page, toast }: any) {
   const [selected, setSelected] = useState(() => getCalcIndexFromPage(page));
@@ -8,15 +11,37 @@ export default function CalcCenter({ page, toast }: any) {
   const [values, setValues] = useState<Record<string, string>>({});
   const [result, setResult] = useState<number | null>(null);
   const [error, setError] = useState('');
+  const [managed, setManaged] = useState<any[] | null>(null);
+
+  useEffect(() => {
+    if (!supabase) return;
+    let current = true;
+    supabase.from('calculators').select('*').eq('status','published').order('name').then(({data}) => {
+      if (current && data?.length) setManaged(data);
+    });
+    return () => { current = false; };
+  }, []);
+
+  const available = managed?.map((row) => {
+    const logicIndex = logicIds.indexOf(row.logic_id);
+    const base = calculations[logicIndex];
+    if (!base) return null;
+    const fields = Array.isArray(row.inputs) && row.inputs.length ? row.inputs.map((field:any)=>({name:String(field.name||'Input'),unit:String(field.unit||'—'),initial:Number(field.initial)||0})) : base.fields;
+    return {...base,...row,fields,logicIndex,unit:row.output?.unit||base.unit,group:row.category||base.group,name:row.name||base.name,description:row.description||base.description,formula:row.formula_display||base.formula,assumptions:row.assumptions||base.assumptions};
+  }).filter(Boolean) as any[] | undefined;
+  const items = available?.length ? available : calculations;
+  const itemKey = items.map((item:any)=>item.logicIndex??calculations.indexOf(item)).join('|');
 
   // Sync state whenever the page route changes
   useEffect(() => {
-    setSelected(getCalcIndexFromPage(page));
+    const preferred = getCalcIndexFromPage(page);
+    const managedIndex = items.findIndex((item:any)=>item.logicIndex===preferred);
+    setSelected(managedIndex>=0?managedIndex:Math.min(preferred,items.length-1));
     setResult(null);
     setError('');
-  }, [page]);
+  }, [page, itemKey]);
 
-  const calc = calculations[selected] || calculations[0];
+  const calc:any = items[selected] || items[0];
 
   const input = (i: number) =>
     values[`${selected}-${i}`] ?? String(calc.fields[i].initial);
@@ -27,14 +52,14 @@ export default function CalcCenter({ page, toast }: any) {
     setError('');
   };
 
-  const visible = calculations
+  const visible = items
     .map((c, i) => ({ c, i }))
     .filter(({ c }) => (c.name + ' ' + c.group).toLowerCase().includes(filter.toLowerCase()));
 
   const calculate = () => {
-    const rawInputs = calc.fields.map((_, i) => (input(i) ?? '').trim());
+    const rawInputs = calc.fields.map((_:any, i:number) => (input(i) ?? '').trim());
 
-    if (rawInputs.some((s) => s === '' || isNaN(Number(s)))) {
+    if (rawInputs.some((s:string) => s === '' || isNaN(Number(s)))) {
       setError('Please enter a valid numeric value for each input field.');
       setResult(null);
       return;
@@ -61,6 +86,7 @@ export default function CalcCenter({ page, toast }: any) {
 
     setError('');
     setResult(n);
+    void recordUsage('calculator',calc.slug||calc.name);
   };
 
   return (
@@ -95,7 +121,7 @@ export default function CalcCenter({ page, toast }: any) {
             ))}
           </div>
           <div className="calc-count">
-            <Activity size={14} /> 10 essential calculators
+            <Activity size={14} /> {items.length} mechanical calculators
           </div>
         </aside>
 
@@ -111,8 +137,10 @@ export default function CalcCenter({ page, toast }: any) {
             </span>
           </div>
 
+          {calc.verification_status&&<div className={`calc-verification-label ${calc.verification_status==='verified'?'verified':'unverified'}`}>{calc.verification_status==='verified'?'Verified calculation':'Not yet verified'}{calc.verified_at&&<small> · checked {new Date(calc.verified_at).toLocaleDateString()}</small>}</div>}
+
           <div className="calc-input-grid">
-            {calc.fields.map((f, i) => (
+            {calc.fields.map((f:any, i:number) => (
               <label key={f.name}>
                 {f.name}
                 <div className="input-unit">
@@ -186,7 +214,7 @@ export default function CalcCenter({ page, toast }: any) {
           </div>
         </div>
         <div className="calc-pick-grid">
-          {calculations.map((c, i) => (
+          {items.map((c:any, i:number) => (
             <button className="calc-pick" key={c.name} onClick={() => choose(i)}>
               <small>{c.group}</small>
               <b>{c.name}</b>

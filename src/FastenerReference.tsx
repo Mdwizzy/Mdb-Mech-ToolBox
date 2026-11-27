@@ -1,4 +1,5 @@
 import {useMemo,useState} from 'react';
+import PublishedAdminContent from './components/PublishedAdminContent';
 import {Info,Search,ShieldCheck,Wrench} from 'lucide-react';
 
 type Row=string[];
@@ -30,4 +31,5 @@ export default function FastenerReference(){const [active,setActive]=useState('h
   </section>
   <div className="fastener-lower-grid"><section className="panel fastener-guidance"><h3><Wrench size={16}/> Fastener identification in the field</h3><ol><li>Identify whether it is a hex-head bolt/nut or socket-head screw.</li><li>Check markings, drawing, equipment manual and specified standard.</li><li>Seat the spanner/socket snugly across flats; seat the hex key fully in the recess.</li><li>If the tool rocks or engages only at the corners, stop and re-check the size and condition.</li><li>For critical joints, use the approved tightening sequence and calibrated torque tool.</li></ol></section>
    <section className="panel fastener-safety"><h3><ShieldCheck size={16}/> Important maintenance notes</h3><ul><li>Apply site PTW / LOTO and verify safe isolation before loosening equipment fasteners.</li><li>Follow the unit procedure for hot, pressurised, chemical or rotating equipment.</li><li>Inspect for rounded, cracked, corroded or damaged fasteners and tooling.</li><li>This chart does not establish bolt grade, thread pitch, tightening torque or pressure-boundary suitability.</li></ul></section></div>
+  <PublishedAdminContent table="fastener_reference" />
  </div>}

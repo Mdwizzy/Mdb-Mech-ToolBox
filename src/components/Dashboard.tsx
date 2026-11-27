@@ -13,6 +13,7 @@ import {
   ShieldCheck,
   Wrench,
 } from 'lucide-react';
+import FeaturedAdminContent from './FeaturedAdminContent';
 
 export default function Dashboard({
   tools,
@@ -126,6 +127,8 @@ export default function Dashboard({
           ))}
         </div>
       </section>
+
+      {!query && <FeaturedAdminContent open={open} />}
 
       <div className="lower-grid">
         <section className="section category-section">
